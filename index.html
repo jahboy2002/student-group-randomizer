@@ -86,8 +86,9 @@
             groups[groupKey].push(number);
         });
 
-        // Animate and display student numbers in the table
+        // Sort numbers in each group and animate display
         groupKeys.forEach(groupKey => {
+            groups[groupKey].sort((a, b) => a - b); // เรียงลำดับจากน้อยไปมาก
             const cell = document.getElementById('group' + groupKey);
             animateNumbers(cell, groups[groupKey]);
         });
