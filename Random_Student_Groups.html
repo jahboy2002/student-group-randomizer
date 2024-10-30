@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Student Groups</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .animated {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Student Group Randomizer</h2>
+<label for="groupCount">Enter the number of groups:</label>
+<input type="number" id="groupCount" min="1" max="26" value="7">
+<br><br>
+<label for="maxStudentNumber">Enter the maximum student number:</label>
+<input type="number" id="maxStudentNumber" min="1" value="50">
+<button onclick="generateGroups()">Randomize Students</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th>Student Numbers</th>
+        </tr>
+    </thead>
+    <tbody id="groupTable">
+        <!-- Group rows will be generated dynamically -->
+    </tbody>
+</table>
+
+<script>
+    function generateGroups() {
+        const groupCount = parseInt(document.getElementById('groupCount').value);
+        const maxStudentNumber = parseInt(document.getElementById('maxStudentNumber').value);
+
+        // Create an array of student numbers from 1 to maxStudentNumber
+        const studentNumbers = Array.from({ length: maxStudentNumber }, (_, i) => i + 1);
+        shuffleArray(studentNumbers);
+
+        // Clear existing group rows in the table
+        const groupTable = document.getElementById('groupTable');
+        groupTable.innerHTML = '';
+
+        const groups = {};
+        const groupNames = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Create groups and add to the table
+        for (let i = 0; i < groupCount; i++) {
+            const groupKey = groupNames[i];
+            groups[groupKey] = [];
+            
+            // Create new row in the table for each group
+            const row = document.createElement('tr');
+            const groupCell = document.createElement('td');
+            groupCell.textContent = groupKey;
+            const studentCell = document.createElement('td');
+            studentCell.id = 'group' + groupKey;
+            row.appendChild(groupCell);
+            row.appendChild(studentCell);
+            groupTable.appendChild(row);
+        }
+
+        // Distribute students into the groups
+        const groupKeys = Object.keys(groups);
+        studentNumbers.forEach((number, index) => {
+            const groupKey = groupKeys[index % groupKeys.length];
+            groups[groupKey].push(number);
+        });
+
+        // Animate and display student numbers in the table
+        groupKeys.forEach(groupKey => {
+            const cell = document.getElementById('group' + groupKey);
+            animateNumbers(cell, groups[groupKey]);
+        });
+    }
+
+    function animateNumbers(cell, finalNumbers) {
+        const intervalTime = 50; // Speed of the animation
+        let counter = 0;
+
+        // Set up interval to animate numbers
+        const interval = setInterval(() => {
+            // Generate random numbers during animation
+            const randomNumbers = Array.from({ length: finalNumbers.length }, () => Math.floor(Math.random() * 50) + 1);
+            cell.textContent = randomNumbers.join(", ");
+            cell.classList.add("animated");
+            
+            // Stop the animation after a certain count and show final numbers
+            if (counter >= 20) { // Number of times to run animation
+                clearInterval(interval);
+                cell.textContent = finalNumbers.join(", ");
+                cell.classList.remove("animated");
+            }
+            counter++;
+        }, intervalTime);
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+</script>
+
+</body>
+</html>
